@@ -112,6 +112,6 @@ docker compose up -d
 ```
 Then update `backend/.env`:
 ```env
-DATABASE_URL="postgresql://erp_user:erp_password_secure_2026@localhost:5432/college_erp"
+DATABASE_URL="postgresql://erp_user:${POSTGRES_PASSWORD}@localhost:5432/college_erp"
 ```
 The repository now uses `backend/prisma/schema.prisma` as the single source of truth. Start PostgreSQL with Docker, then push the schema using `npm run prisma:push` from `backend`.
