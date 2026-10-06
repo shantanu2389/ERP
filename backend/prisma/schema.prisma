@@ -1,6 +1,6 @@
 datasource db {
   // SQLite keeps the local demo self-contained. Use schema.postgres.prisma for deployment.
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
