@@ -105,13 +105,5 @@ Every privileged change records:
 
 ---
 
-## 🐳 Production Deployment (PostgreSQL + Redis + S3)
-To deploy with Docker:
-```bash
-docker compose up -d
-```
-Then update `backend/.env`:
-```env
-DATABASE_URL="postgresql://erp_user:${POSTGRES_PASSWORD}@localhost:5432/college_erp"
-```
-The repository now uses `backend/prisma/schema.prisma` as the single source of truth. Start PostgreSQL with Docker, then push the schema using `npm run prisma:push` from `backend`.
+Live link :
+https://erp-gold-sigma.vercel.app/
