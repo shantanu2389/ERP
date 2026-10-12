@@ -89,7 +89,7 @@ export const requirePermissions = (...requiredPermissions: string[]) => {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    // Super Admin has all permissions
+    
     if (req.user.role === 'SUPER_ADMIN') {
       return next();
     }

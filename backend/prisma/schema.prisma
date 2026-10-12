@@ -1,5 +1,5 @@
 datasource db {
-  // SQLite keeps the local demo self-contained. Use schema.postgres.prisma for deployment.
+  
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -13,11 +13,11 @@ model User {
   email        String   @unique
   passwordHash String
   name         String
-  role         String   @default("STUDENT") // "SUPER_ADMIN" | "ERP_ADMIN" | "TEACHER" | "STUDENT"
-  status       String   @default("ACTIVE")  // "ACTIVE" | "INACTIVE" | "SUSPENDED"
+  role         String   @default("STUDENT") 
+  status       String   @default("ACTIVE")  
   avatar       String?
   phone        String?
-  permissions  String   @default("")        // Comma-separated granular permissions e.g. "attendance.mark,notes.upload"
+  permissions  String   @default("")        
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   activeSessionId String?
@@ -51,11 +51,11 @@ model Course {
 
 model ClassSection {
   id                 String                     @id @default(cuid())
-  name               String                     // e.g. "CSE-4A"
+  name               String                     
   departmentId       String
   department         Department                 @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   semester           Int                        @default(1)
-  academicYear       String                     // e.g. "2026-2027"
+  academicYear       String                     
   students           Student[]
   timetableSlots     TimetableSlot[]
   attendanceRecords  Attendance[]
@@ -65,11 +65,11 @@ model ClassSection {
 
 model Subject {
   id                 String                     @id @default(cuid())
-  name               String                     // e.g. "Data Structures & Algorithms"
-  code               String                     @unique // e.g. "CS201"
+  name               String                     
+  code               String                     @unique 
   credits            Int                        @default(4)
   semester           Int                        @default(1)
-    courseType         String                     @default("THEORY") // THEORY | LAB | PRACTICAL
+    courseType         String                     @default("THEORY") 
   departmentId       String
   department         Department                 @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   teacherAssignments TeacherSubjectAssignment[]
@@ -87,8 +87,8 @@ model Teacher {
   employeeId         String                     @unique
   departmentId       String
   department         Department                 @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  designation        String                     // e.g. "Associate Professor"
-  qualification      String                     // e.g. "Ph.D. in Computer Science"
+  designation        String                     
+  qualification      String                     
   cabinNo            String?
   subjectAssignments TeacherSubjectAssignment[]
   timetableSlots     TimetableSlot[]
@@ -113,8 +113,8 @@ model Student {
   id                 String                     @id @default(cuid())
   userId             String                     @unique
   user               User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rollNo             String                     @unique // e.g. "24CSE1023"
-  admissionNo        String                     @unique // e.g. "ADM-2024-8841"
+  rollNo             String                     @unique 
+  admissionNo        String                     @unique 
   departmentId       String
   department         Department                 @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   classSectionId     String
@@ -122,7 +122,7 @@ model Student {
   semester           Int                        @default(1)
   fatherName         String
   motherName         String
-  dob                String                     // YYYY-MM-DD
+  dob                String                     
   bloodGroup         String?
   address            String?
   emergencyContact   String?
@@ -144,8 +144,8 @@ model Attendance {
   teacher        Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   classSectionId String
   classSection   ClassSection @relation(fields: [classSectionId], references: [id], onDelete: Cascade)
-  date           String       // YYYY-MM-DD
-  status         String       // "PRESENT" | "ABSENT" | "LATE" | "EXCUSED"
+  date           String       
+  status         String       
   remarks        String?
   createdAt      DateTime     @default(now())
 
@@ -155,7 +155,7 @@ model Attendance {
 model Note {
   id          String   @id @default(cuid())
   title       String
-  unit        String   // e.g. "Unit 2: Wave Optics"
+  unit        String   
   description String?
   subjectId   String
   subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
@@ -177,7 +177,7 @@ model Assignment {
   teacher        Teacher                @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   classSectionId String
   classSection   ClassSection           @relation(fields: [classSectionId], references: [id], onDelete: Cascade)
-  dueDate        String                 // YYYY-MM-DD
+  dueDate        String                 
   maxMarks       Int                    @default(100)
   attachmentUrl  String?
   createdAt      DateTime               @default(now())
@@ -193,7 +193,7 @@ model AssignmentSubmission {
   submittedAt  DateTime   @default(now())
   fileUrl      String
   fileName     String
-  status       String     @default("SUBMITTED") // "SUBMITTED" | "GRADED" | "LATE"
+  status       String     @default("SUBMITTED") 
   marks        Float?
   feedback     String?
 
@@ -202,14 +202,14 @@ model AssignmentSubmission {
 
 model Exam {
   id           String       @id @default(cuid())
-  name         String       // e.g. "Mid-Semester Examination - Spring 2026"
-  examType     String       // "MID_TERM" | "END_TERM" | "INTERNAL"
-  examDate     String       // YYYY-MM-DD
+  name         String       
+  examType     String       
+  examDate     String       
   slot         String?
   code         String?
   course       String?
   semester     Int          @default(1)
-  academicYear String       // e.g. "2026-2027"
+  academicYear String       
   regularBacklog String     @default("REGULAR")
   results      ExamResult[]
 }
@@ -217,7 +217,7 @@ model Exam {
 model PlacementDrive {
   id             String   @id @default(cuid())
   companyName    String
-  scheduledDate  String   // YYYY-MM-DD
+  scheduledDate  String   
   salaryStipend  String
   eligibility    String
   degreeBranch   String
@@ -226,9 +226,9 @@ model PlacementDrive {
 
 model AcademicHoliday {
   id        String   @id @default(cuid())
-  date      String   @unique // YYYY-MM-DD
+  date      String   @unique 
   name      String
-  type      String   @default("HOLIDAY") // HOLIDAY | EXAM_BREAK | CAMPUS_CLOSED
+  type      String   @default("HOLIDAY") 
   createdAt DateTime @default(now())
 }
 
@@ -242,7 +242,7 @@ model ExamResult {
   subject       Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   marksObtained Float
   maxMarks      Float    @default(100)
-  grade         String   // "A+", "A", "B+", "B", "C", "F"
+  grade         String   
   remarks       String?
 
   @@unique([examId, studentId, subjectId])
@@ -256,19 +256,19 @@ model TimetableSlot {
   subject        Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   teacherId      String
   teacher        Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  dayOfWeek      String       // "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY"
-  startTime      String       // "09:00"
-  endTime        String       // "10:00"
-  room           String       // "LH-204"
+  dayOfWeek      String       
+  startTime      String       
+  endTime        String       
+  room           String       
 }
 
 model Notice {
   id             String   @id @default(cuid())
   title          String
   content        String
-  category       String   @default("GENERAL") // "ACADEMIC" | "EXAM" | "EVENT" | "GENERAL"
-  targetAudience String   @default("ALL")     // "ALL" | "STUDENTS" | "TEACHERS"
-  priority       String   @default("NORMAL")  // "NORMAL" | "HIGH" | "URGENT"
+  category       String   @default("GENERAL") 
+  targetAudience String   @default("ALL")     
+  priority       String   @default("NORMAL")  
   authorId       String
   author         User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt      DateTime @default(now())
@@ -278,12 +278,12 @@ model ProfileCorrectionRequest {
   id             String    @id @default(cuid())
   studentId      String
   student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  fieldName      String    // e.g. "fatherName", "dob", "motherName"
-  oldValue       String    // e.g. "Rajesh Kumar"
-  requestedValue String    // e.g. "Rakesh Kumar"
-  reason         String    // e.g. "Spelling mistake correction per 10th certificate"
+  fieldName      String    
+  oldValue       String    
+  requestedValue String    
+  reason         String    
   documentUrl    String?
-  status         String    @default("PENDING") // "PENDING" | "APPROVED" | "REJECTED"
+  status         String    @default("PENDING") 
   reviewedById   String?
   reviewedAt     DateTime?
   adminRemarks   String?
@@ -297,7 +297,7 @@ model ODRequest {
   date         String
   reason       String
   documentUrl  String
-  status       String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  status       String   @default("PENDING") 
   reviewedById String?
   reviewedAt   DateTime?
   adminRemarks String?
@@ -315,7 +315,7 @@ model FeeInvoice {
   description   String
   amount        Int
   dueDate       String
-  status        String        @default("PENDING") // PENDING | PAID | OVERDUE
+  status        String        @default("PENDING") 
   paidAt        DateTime?
   createdAt     DateTime      @default(now())
   payments      FeePayment[]
@@ -330,7 +330,7 @@ model FeePayment {
   transactionId String     @unique
   amount        Int
   provider      String     @default("CGC-ONLINE")
-  status        String     @default("SUCCESS") // SUCCESS | FAILED
+  status        String     @default("SUCCESS") 
   paidAt        DateTime   @default(now())
   receiptNumber String     @unique
 }
@@ -341,8 +341,8 @@ model AuditLog {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userRole   String
   userName   String
-  action     String   // e.g. "PROFILE_CORRECTION_APPROVED", "ATTENDANCE_MARKED"
-  entityType String   // e.g. "Student", "Attendance", "User"
+  action     String   
+  entityType String   
   entityId   String
   oldValue   String?
   newValue   String?

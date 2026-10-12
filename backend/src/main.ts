@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.CORS_ORIGIN) {
   throw new Error('CORS_ORIGIN must be configured in production.');
 }
 
-// CORS configuration: never combine credentials with a wildcard origin.
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -36,8 +36,8 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Small in-memory guard for the local/demo server. Put the API behind a reverse
-// proxy/WAF with distributed rate limiting in production.
+
+
 app.use('/api/auth/login', (req: Request, res: Response, next: NextFunction) => {
   const key = String(req.ip || req.socket.remoteAddress || 'unknown');
   const now = Date.now();
@@ -48,7 +48,7 @@ app.use('/api/auth/login', (req: Request, res: Response, next: NextFunction) => 
   next();
 });
 
-// Request logger for visibility
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -60,23 +60,23 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// API Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notices', noticeRoutes);
 
-// Health check endpoint
+
 app.use('/api/health', healthRoutes);
 app.use('/api/schedule', scheduleRoutes);
 
-// Global 404 handler
+
 app.use((req: Request, res: Response) => {
   res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.path}` });
 });
 
-// Global Error Handler
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error('[Global Error]:', err);
   res.status(err.status || 500).json({
@@ -91,7 +91,7 @@ const server = app.listen(PORT, () => {
   console.log(`📡 Health check available at http://localhost:${PORT}/api/health`);
 });
 
-// Graceful shutdown
+
 const shutdown = async (signal: string) => {
   console.log(`${signal} signal received: closing HTTP server`);
   server.close(async () => {

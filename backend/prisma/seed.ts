@@ -6,15 +6,15 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting comprehensive College ERP database seed...');
 
-  // Never wipe a database that already contains accounts. This keeps local
-  // recovery safe while still allowing a completely empty development DB to
-  // be initialized with the demo college data.
+  
+  
+  
   const existingUsers = await prisma.user.count();
   if (existingUsers > 0) {
     throw new Error('Seed aborted: existing user data detected. Use a deliberate migration/reset procedure instead.');
   }
 
-  // Clean existing records in correct relation order
+  
   await prisma.auditLog.deleteMany();
   await prisma.profileCorrectionRequest.deleteMany();
   await prisma.notice.deleteMany();
@@ -280,7 +280,7 @@ async function main() {
   });
 
   console.log('Creating Students...');
-  // Aarav Patel - Main Demo Student
+  
   const studentUser1 = await prisma.user.create({
     data: {
       email: '24cse1023@college.edu',
@@ -310,7 +310,7 @@ async function main() {
     },
   });
 
-  // Student 2: Priya Sharma
+  
   const studentUser2 = await prisma.user.create({
     data: {
       email: '24cse1024@college.edu',
@@ -340,7 +340,7 @@ async function main() {
     },
   });
 
-  // Student 3: Rohan Verma (Attendance near threshold: 72% for prediction demo!)
+  
   const studentUser3 = await prisma.user.create({
     data: {
       email: '24cse1025@college.edu',
@@ -370,7 +370,7 @@ async function main() {
     },
   });
 
-  // Student 4: Sneha Iyer
+  
   const studentUser4 = await prisma.user.create({
     data: {
       email: '24cse1026@college.edu',
@@ -401,20 +401,20 @@ async function main() {
   });
 
   console.log('Seeding Attendance Records across subjects...');
-  // Generate realistic attendance dates over past 30 teaching days
+  
   const subjects = [
-    { sub: subDsa, teacher: teacher1, targetAaravPresent: 26, total: 30 }, // ~86.6%
-    { sub: subOs, teacher: teacher1, targetAaravPresent: 24, total: 30 },  // 80.0%
-    { sub: subDbms, teacher: teacher2, targetAaravPresent: 28, total: 30 },// 93.3%
-    { sub: subCn, teacher: teacher3, targetAaravPresent: 24, total: 30 },  // 80.0%
-    { sub: subMath, teacher: teacher1, targetAaravPresent: 25, total: 30 },// 83.3%
+    { sub: subDsa, teacher: teacher1, targetAaravPresent: 26, total: 30 }, 
+    { sub: subOs, teacher: teacher1, targetAaravPresent: 24, total: 30 },  
+    { sub: subDbms, teacher: teacher2, targetAaravPresent: 28, total: 30 },
+    { sub: subCn, teacher: teacher3, targetAaravPresent: 24, total: 30 },  
+    { sub: subMath, teacher: teacher1, targetAaravPresent: 25, total: 30 },
   ];
 
   for (const item of subjects) {
     for (let day = 1; day <= item.total; day++) {
       const dateStr = `2026-09-${day.toString().padStart(2, '0')}`;
       
-      // Aarav
+      
       const aaravStatus = day <= item.targetAaravPresent ? 'PRESENT' : 'ABSENT';
       await prisma.attendance.create({
         data: {
@@ -427,7 +427,7 @@ async function main() {
         },
       });
 
-      // Priya (very high attendance)
+      
       const priyaStatus = day <= 28 ? 'PRESENT' : 'ABSENT';
       await prisma.attendance.create({
         data: {
@@ -440,7 +440,7 @@ async function main() {
         },
       });
 
-      // Rohan (72% attendance for prediction demo)
+      
       const rohanStatus = day <= 21 ? 'PRESENT' : 'ABSENT';
       await prisma.attendance.create({
         data: {
@@ -453,7 +453,7 @@ async function main() {
         },
       });
 
-      // Sneha
+      
       const snehaStatus = day <= 27 ? 'PRESENT' : 'ABSENT';
       await prisma.attendance.create({
         data: {
@@ -711,9 +711,9 @@ async function main() {
   });
 
   console.log('Creating Profile Correction Request (Matching User Scenario)...');
-  // Student: 24CSE1023 (Aarav Patel)
-  // Requested Change: Father's Name (Old: Rajesh Kumar -> New: Rakesh Kumar)
-  // Reason: Incorrect spelling
+  
+  
+  
   await prisma.profileCorrectionRequest.create({
     data: {
       studentId: student1.id,
@@ -726,7 +726,7 @@ async function main() {
     },
   });
 
-  // Approved past correction request to showcase completed workflow
+  
   await prisma.profileCorrectionRequest.create({
     data: {
       studentId: student2.id,

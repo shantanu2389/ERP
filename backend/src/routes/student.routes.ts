@@ -6,11 +6,11 @@ import crypto from 'crypto';
 
 const router = Router();
 
-// Middleware: Student only
+
 router.use(authenticate);
 router.use(requireRoles('STUDENT'));
 
-// Helper to get student record from authenticated user
+
 async function getStudent(userId: string) {
   return await prisma.student.findUnique({
     where: { userId },
@@ -28,7 +28,7 @@ function weekdayForDate(date: string): string {
     .toUpperCase();
 }
 
-// GET /api/student/dashboard
+
 router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -36,7 +36,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ success: false, message: 'Student profile not found' });
     }
 
-    // Attendance stats
+    
     const attendanceRecords = await prisma.attendance.findMany({
       where: { studentId: student.id },
       include: { subject: true },
@@ -48,8 +48,8 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
     });
     const academicHolidays = await prisma.academicHoliday.findMany({ orderBy: { date: 'asc' } });
     const holidayDates = new Set(academicHolidays.map((holiday) => holiday.date));
-    // A mark is a valid class only when the subject was actually scheduled on
-    // that weekday and the date is not an academic holiday.
+    
+    
     const validAttendanceRecords = attendanceRecords.filter((record) => (
       !holidayDates.has(record.date) && dashboardSlots.some((slot) => slot.subjectId === record.subjectId && slot.dayOfWeek === weekdayForDate(record.date))
     ));
@@ -58,12 +58,12 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
     const presentClasses = validAttendanceRecords.filter((a) => a.status === 'PRESENT').length;
     const overallPercentage = totalClasses > 0 ? Number(((presentClasses / totalClasses) * 100).toFixed(1)) : 100;
 
-    // Subjects enrolled for class
+    
     const subjects = await prisma.subject.findMany({
       where: { departmentId: student.departmentId, semester: student.semester },
     });
 
-    // Subject-wise attendance calculation
+    
     const subjectWise = subjects.map((sub) => {
       const subRecords = validAttendanceRecords.filter((a) => a.subjectId === sub.id);
       const subTotal = subRecords.length;
@@ -81,7 +81,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
       };
     });
 
-    // Today's classes from Timetable
+    
     const currentDate = new Date().toISOString().split('T')[0];
     const todayName = weekdayForDate(currentDate);
     const timetable = await prisma.timetableSlot.findMany({
@@ -92,7 +92,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
 
     const todayClasses = holidayDates.has(currentDate) ? [] : timetable.filter((slot) => slot.dayOfWeek === (todayName === 'SUNDAY' ? 'MONDAY' : todayName));
 
-    // Recent Notes
+    
     const recentNotes = await prisma.note.findMany({
       where: { subject: { departmentId: student.departmentId, semester: student.semester } },
       include: { subject: true, teacher: { include: { user: true } } },
@@ -100,7 +100,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Active Assignments
+    
     const assignments = await prisma.assignment.findMany({
       where: { classSectionId: student.classSectionId },
       include: {
@@ -110,7 +110,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
       orderBy: { dueDate: 'asc' },
     });
 
-    // Notices
+    
     const notices = await prisma.notice.findMany({
       where: { targetAudience: { in: ['ALL', 'STUDENTS'] } },
       orderBy: { createdAt: 'desc' },
@@ -159,7 +159,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/profile
+
 router.get('/profile', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -197,7 +197,7 @@ router.get('/profile', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/attendance
+
 router.get('/attendance', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -233,7 +233,7 @@ router.get('/attendance', async (req: AuthRequest, res: Response) => {
       const present = subRecords.filter((r) => r.status === 'PRESENT').length;
       const percentage = total > 0 ? Number(((present / total) * 100).toFixed(1)) : 100;
 
-      // Attendance prediction per subject (target 75%)
+      
       let prediction = '';
       let statusType = 'GOOD';
       if (percentage >= 75) {
@@ -279,7 +279,7 @@ router.get('/attendance', async (req: AuthRequest, res: Response) => {
       };
     });
 
-    // Overall attendance prediction
+    
     let overallPrediction = '';
     if (overallPercentage >= 75) {
       const safeMiss = Math.floor((presentClasses - 0.75 * totalClasses) / 0.75);
@@ -304,8 +304,8 @@ router.get('/attendance', async (req: AuthRequest, res: Response) => {
         const recordDay = weekdayForDate(record.date);
         return {
           ...record,
-          // Show only the lecture slot(s) that actually occurred on this date.
-          // This also supports two lectures of the same subject on one day.
+          
+          
           classTimings: classSlots
             .filter((slot) => slot.subjectId === record.subjectId && slot.dayOfWeek === recordDay)
             .map((slot) => `${slot.startTime}–${slot.endTime}`),
@@ -318,7 +318,7 @@ router.get('/attendance', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/timetable
+
 router.get('/timetable', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -339,7 +339,7 @@ router.get('/timetable', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/notes
+
 router.get('/notes', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -365,7 +365,7 @@ router.get('/notes', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/assignments
+
 router.get('/assignments', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -389,7 +389,7 @@ router.get('/assignments', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/student/assignments/:id/submit
+
 router.post('/assignments/:id/submit', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -430,7 +430,7 @@ router.post('/assignments/:id/submit', async (req: AuthRequest, res: Response) =
   }
 });
 
-// GET /api/student/results
+
 router.get('/results', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -464,7 +464,7 @@ router.get('/results', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/student/profile-correction
+
 router.post('/profile-correction', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -479,7 +479,7 @@ router.post('/profile-correction', async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Get current value of field
+    
     let oldValue = (student as any)[fieldName] || 'N/A';
     if (fieldName === "Father's Name") oldValue = student.fatherName;
     if (fieldName === "Mother's Name") oldValue = student.motherName;
@@ -516,7 +516,7 @@ router.post('/profile-correction', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/profile-corrections
+
 router.get('/profile-corrections', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -533,7 +533,7 @@ router.get('/profile-corrections', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// Student OD (On Duty) request with supporting PDF. HOD/ERP Admin reviews it.
+
 router.get('/od-requests', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -560,7 +560,7 @@ router.post('/od-requests', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/student/fees
+
 router.get('/fees', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);
@@ -586,8 +586,8 @@ router.get('/fees', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// Demo-safe online checkout. Replace the transaction creation block with the
-// verified Razorpay/Stripe webhook in production.
+
+
 router.post('/fees/:id/pay', async (req: AuthRequest, res: Response) => {
   try {
     const student = await getStudent(req.user!.id);

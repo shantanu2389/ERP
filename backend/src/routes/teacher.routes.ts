@@ -5,11 +5,11 @@ import { logAuditEvent } from '../middleware/audit';
 
 const router = Router();
 
-// Middleware: Teacher only
+
 router.use(authenticate);
 router.use(requireRoles('TEACHER', 'SUPER_ADMIN'));
 
-// Helper to get teacher record
+
 async function getTeacher(userId: string) {
   return await prisma.teacher.findUnique({
     where: { userId },
@@ -26,7 +26,7 @@ async function getTeacher(userId: string) {
   });
 }
 
-// GET /api/teacher/dashboard
+
 router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -34,22 +34,22 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
 
     const assignedSectionIds = teacher.subjectAssignments.map((sa) => sa.classSectionId);
 
-    // Count students
+    
     const totalStudents = await prisma.student.count({
       where: { classSectionId: { in: assignedSectionIds } },
     });
 
-    // Notes uploaded
+    
     const notesCount = await prisma.note.count({
       where: { teacherId: teacher.id },
     });
 
-    // Active assignments
+    
     const assignmentsCount = await prisma.assignment.count({
       where: { teacherId: teacher.id },
     });
 
-    // Today's classes
+    
     const todayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date()).toUpperCase();
     const timetable = await prisma.timetableSlot.findMany({
       where: {
@@ -101,7 +101,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/teacher/classes
+
 router.get('/classes', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -120,12 +120,12 @@ router.get('/classes', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/teacher/classes/:sectionId/subjects/:subjectId/students
+
 router.get('/classes/:sectionId/subjects/:subjectId/students', async (req: AuthRequest, res: Response) => {
   try {
     const sectionId = String(req.params.sectionId);
     const subjectId = String(req.params.subjectId);
-    const { date } = req.query; // YYYY-MM-DD
+    const { date } = req.query; 
     const dateStr = String(date || new Date().toISOString().split('T')[0]);
 
     if (dateStr !== new Date().toISOString().split('T')[0]) {
@@ -146,7 +146,7 @@ router.get('/classes/:sectionId/subjects/:subjectId/students', async (req: AuthR
       orderBy: { rollNo: 'asc' },
     });
 
-    // Find attendance records for this date and subject
+    
     const attendanceRecords = await prisma.attendance.findMany({
       where: {
         subjectId,
@@ -161,7 +161,7 @@ router.get('/classes/:sectionId/subjects/:subjectId/students', async (req: AuthR
       id: s.id,
       rollNo: s.rollNo,
       name: s.user.name,
-      status: attendanceMap.get(s.id) || 'PRESENT', // default present
+      status: attendanceMap.get(s.id) || 'PRESENT', 
     }));
 
     return res.json({
@@ -176,14 +176,14 @@ router.get('/classes/:sectionId/subjects/:subjectId/students', async (req: AuthR
   }
 });
 
-// POST /api/teacher/attendance/mark
+
 router.post('/attendance/mark', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
     if (!teacher) return res.status(404).json({ success: false, message: 'Teacher profile not found' });
 
     const { subjectId, classSectionId, date, attendance } = req.body;
-    // attendance: [ { studentId: string, status: 'PRESENT' | 'ABSENT' | 'LATE' } ]
+    
 
     if (!subjectId || !classSectionId || !date || !Array.isArray(attendance)) {
       return res.status(400).json({ success: false, message: 'Invalid attendance payload' });
@@ -196,7 +196,7 @@ router.post('/attendance/mark', async (req: AuthRequest, res: Response) => {
     });
     if (!scheduled) return res.status(403).json({ success: false, message: 'You can only mark attendance for your scheduled class today.' });
 
-    // Upsert attendance for each student
+    
     for (const record of attendance) {
       await prisma.attendance.upsert({
         where: {
@@ -239,7 +239,7 @@ router.post('/attendance/mark', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/teacher/notes/upload
+
 router.post('/notes/upload', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -278,7 +278,7 @@ router.post('/notes/upload', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/teacher/notes
+
 router.get('/notes', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -296,7 +296,7 @@ router.get('/notes', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/teacher/assignments/create
+
 router.post('/assignments/create', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -327,7 +327,7 @@ router.post('/assignments/create', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/teacher/assignments
+
 router.get('/assignments', async (req: AuthRequest, res: Response) => {
   try {
     const teacher = await getTeacher(req.user!.id);
@@ -353,7 +353,7 @@ router.get('/assignments', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/teacher/assignments/submissions/:id/grade
+
 router.post('/assignments/submissions/:id/grade', async (req: AuthRequest, res: Response) => {
   try {
     const submissionId = String(req.params.id);

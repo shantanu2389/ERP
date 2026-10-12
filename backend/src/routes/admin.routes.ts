@@ -6,11 +6,11 @@ import { logAuditEvent } from '../middleware/audit';
 
 const router = Router();
 
-// Middleware: Admin only (SUPER_ADMIN or ERP_ADMIN)
+
 router.use(authenticate);
 router.use(requireRoles('SUPER_ADMIN', 'ERP_ADMIN'));
 
-// GET /api/admin/dashboard
+
 router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   try {
     const totalStudents = await prisma.student.count();
@@ -28,7 +28,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
       take: 6,
     });
 
-    // Attendance health
+    
     const totalAttendance = await prisma.attendance.count();
     const presentAttendance = await prisma.attendance.count({ where: { status: 'PRESENT' } });
     const collegeAttendanceRate = totalAttendance > 0 ? Number(((presentAttendance / totalAttendance) * 100).toFixed(1)) : 0;
@@ -51,7 +51,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/admin/students
+
 router.get('/students', async (req: AuthRequest, res: Response) => {
   try {
     const { search, departmentId, semester } = req.query;
@@ -84,7 +84,7 @@ router.get('/students', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/admin/academic-options (options for student registration)
+
 router.get('/academic-options', async (_req: AuthRequest, res: Response) => {
   try {
     const departments = await prisma.department.findMany({
@@ -97,7 +97,7 @@ router.get('/academic-options', async (_req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/admin/students (Create Student)
+
 router.post('/students', async (req: AuthRequest, res: Response) => {
   try {
     const { name, email, rollNo, admissionNo, departmentId, classSectionId, semester, fatherName, motherName, dob, bloodGroup, address } = req.body;
@@ -151,7 +151,7 @@ router.post('/students', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /api/admin/students/:id (Admin edit student)
+
 router.put('/students/:id', async (req: AuthRequest, res: Response) => {
   try {
     const studentId = String(req.params.id);
@@ -211,11 +211,11 @@ router.put('/students/:id', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PATCH /api/admin/students/:id/status (Toggle Account Status)
+
 router.patch('/students/:id/status', async (req: AuthRequest, res: Response) => {
   try {
     const studentId = String(req.params.id);
-    const { status } = req.body; // ACTIVE | SUSPENDED | INACTIVE
+    const { status } = req.body; 
 
     const student = await prisma.student.findUnique({
       where: { id: studentId },
@@ -244,7 +244,7 @@ router.patch('/students/:id/status', async (req: AuthRequest, res: Response) => 
   }
 });
 
-// DELETE /api/admin/students/:id (Remove student account and profile)
+
 router.delete('/students/:id', async (req: AuthRequest, res: Response) => {
   try {
     const studentId = String(req.params.id);
@@ -270,7 +270,7 @@ router.delete('/students/:id', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/admin/teachers
+
 router.get('/teachers', async (req: AuthRequest, res: Response) => {
   try {
     const teachers = await prisma.teacher.findMany({
@@ -292,7 +292,7 @@ router.get('/teachers', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/admin/correction-requests
+
 router.get('/correction-requests', async (req: AuthRequest, res: Response) => {
   try {
     const requests = await prisma.profileCorrectionRequest.findMany({
@@ -314,11 +314,11 @@ router.get('/correction-requests', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/admin/correction-requests/:id/action (Approve or Reject Correction Request)
+
 router.post('/correction-requests/:id/action', async (req: AuthRequest, res: Response) => {
   try {
     const requestId = String(req.params.id);
-    const { action, adminRemarks } = req.body; // action: 'APPROVED' | 'REJECTED'
+    const { action, adminRemarks } = req.body; 
 
     if (!['APPROVED', 'REJECTED'].includes(action)) {
       return res.status(400).json({ success: false, message: 'Action must be APPROVED or REJECTED' });
@@ -337,7 +337,7 @@ router.post('/correction-requests/:id/action', async (req: AuthRequest, res: Res
       return res.status(400).json({ success: false, message: `Request is already ${request.status}` });
     }
 
-    // If APPROVED, perform actual update on Student record
+    
     if (action === 'APPROVED') {
       const field = request.fieldName;
       const newVal = request.requestedValue;
@@ -357,7 +357,7 @@ router.post('/correction-requests/:id/action', async (req: AuthRequest, res: Res
       }
     }
 
-    // Update request state
+    
     const updatedRequest = await prisma.profileCorrectionRequest.update({
       where: { id: requestId },
       data: {
@@ -368,7 +368,7 @@ router.post('/correction-requests/:id/action', async (req: AuthRequest, res: Res
       },
     });
 
-    // Write essential AUDIT LOG
+    
     await logAuditEvent({
       req,
       action: action === 'APPROVED' ? 'PROFILE_CORRECTION_APPROVED' : 'PROFILE_CORRECTION_REJECTED',
@@ -394,7 +394,7 @@ router.post('/correction-requests/:id/action', async (req: AuthRequest, res: Res
   }
 });
 
-// GET /api/admin/audit-logs
+
 router.get('/audit-logs', async (req: AuthRequest, res: Response) => {
   try {
     const { action, entityType, limit } = req.query;
@@ -415,7 +415,7 @@ router.get('/audit-logs', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/admin/password-reset
+
 router.post('/password-reset', async (req: AuthRequest, res: Response) => {
   try {
     const { userId, newPassword } = req.body;
@@ -446,7 +446,7 @@ router.post('/password-reset', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// GET /api/admin/academics
+
 router.get('/academics', async (req: AuthRequest, res: Response) => {
   try {
     const departments = await prisma.department.findMany({
@@ -463,8 +463,8 @@ router.get('/academics', async (req: AuthRequest, res: Response) => {
   }
 });
 
-// HOD / ERP Admin OD review. Approval also credits the student on every
-// scheduled class for that date, so the record is reflected in attendance.
+
+
 router.get('/od-requests', async (_req: AuthRequest, res: Response) => {
   try {
     const requests = await prisma.oDRequest.findMany({

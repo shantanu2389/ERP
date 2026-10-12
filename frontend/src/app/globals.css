@@ -15,7 +15,7 @@ body {
   padding: 0;
 }
 
-/* Compact dark mode for the authenticated portal. The light college palette remains the default. */
+
 .theme-dark {
   background: #0f172a;
   color: #e2e8f0;
@@ -28,7 +28,7 @@ body {
 .theme-dark .border-slate-200, .theme-dark .border-slate-300, .theme-dark .border-slate-100 { border-color: #334155 !important; }
 .theme-dark .shadow-xs, .theme-dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,.25); }
 
-/* Custom scrollbars */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

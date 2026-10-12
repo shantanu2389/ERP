@@ -77,7 +77,7 @@ function ERPPortal() {
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Login page state
+  
   const [loginRoleTab, setLoginRoleTab] = useState<'STUDENT' | 'TEACHER' | 'ADMIN'>('STUDENT');
   const [identifier, setIdentifier] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -87,7 +87,7 @@ function ERPPortal() {
   const [challenge, setChallenge] = useState<{ challengeId: string; question: string }>({ challengeId: '', question: '' });
   const [challengeAnswer, setChallengeAnswer] = useState<string>('');
 
-  // Student states
+  
   const [studentDashboard, setStudentDashboard] = useState<any>(null);
   const [studentAttendance, setStudentAttendance] = useState<any>(null);
   const [studentNotes, setStudentNotes] = useState<any[]>([]);
@@ -104,18 +104,18 @@ function ERPPortal() {
   const [odDocument, setOdDocument] = useState<string>('');
   const [odDocumentName, setOdDocumentName] = useState<string>('');
 
-  // Student assignment submission modal
+  
   const [submittingAssignment, setSubmittingAssignment] = useState<any>(null);
   const [assignmentFileUrl, setAssignmentFileUrl] = useState<string>('');
   const [assignmentFileName, setAssignmentFileName] = useState<string>('');
 
-  // Student correction modal state
+  
   const [showCorrectionModal, setShowCorrectionModal] = useState<boolean>(false);
   const [correctionField, setCorrectionField] = useState<string>("Father's Name");
   const [requestedValue, setRequestedValue] = useState<string>('Rakesh Kumar');
   const [correctionReason, setCorrectionReason] = useState<string>('Spelling error in college admission record');
 
-  // Teacher states
+  
   const [teacherDashboard, setTeacherDashboard] = useState<any>(null);
   const [teacherStudents, setTeacherStudents] = useState<any[]>([]);
   const [teacherAssignments, setTeacherAssignments] = useState<any[]>([]);
@@ -127,7 +127,7 @@ function ERPPortal() {
   const [showUploadNoteModal, setShowUploadNoteModal] = useState<boolean>(false);
   const [newNote, setNewNote] = useState({ title: '', unit: '', description: '', subjectId: '', fileUrl: '' });
 
-  // Teacher create assignment modal
+  
   const [showCreateAssignmentModal, setShowCreateAssignmentModal] = useState<boolean>(false);
   const [newAssignment, setNewAssignment] = useState({
     title: '',
@@ -138,12 +138,12 @@ function ERPPortal() {
     maxMarks: '100',
   });
 
-  // Teacher grade submission modal
+  
   const [gradingSubmission, setGradingSubmission] = useState<{ submission: any; assignment: any } | null>(null);
   const [gradeMarks, setGradeMarks] = useState<string>('');
   const [gradeFeedback, setGradeFeedback] = useState<string>('');
 
-  // Admin states
+  
   const [adminDashboard, setAdminDashboard] = useState<any>(null);
   const [adminStudents, setAdminStudents] = useState<any[]>([]);
   const [adminCorrections, setAdminCorrections] = useState<any[]>([]);
@@ -158,7 +158,7 @@ function ERPPortal() {
     fatherName: '', motherName: '', dob: '', bloodGroup: '', address: '',
   });
 
-  // Check saved session on mount (NO automatic bypass/auto-login without explicit session!)
+  
   useEffect(() => {
     const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('cgc-theme') : null;
     if (savedTheme === 'dark') setTheme('dark');
@@ -238,8 +238,8 @@ function ERPPortal() {
 
   const loadPersonaData = async (sess: UserSession) => {
     try {
-      // The academic schedule module is optional in this local build; do not
-      // block login/data loading when that separate service is unavailable.
+      
+      
       setAcademicSchedule({ examTimetable: [], placementScheduled: [] });
       if (sess.user.role === 'STUDENT') {
         const [dash, att, notes, tt, assign, results, prof, od, fees] = await Promise.all([
@@ -322,7 +322,7 @@ function ERPPortal() {
     }
   };
 
-  // Student submit correction request
+  
   const handleSubmitCorrection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) return;
@@ -393,7 +393,7 @@ function ERPPortal() {
     } catch (err: any) { showToast('error', err.message); }
   };
 
-  // Student submit assignment
+  
   const handleStudentAssignmentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session || !submittingAssignment) return;
@@ -409,7 +409,7 @@ function ERPPortal() {
       setSubmittingAssignment(null);
       setAssignmentFileUrl('');
       setAssignmentFileName('');
-      // Reload assignments
+      
       const assign = await fetchWithAuth('/student/assignments', session.token);
       setStudentAssignments(assign.assignments || []);
     } catch (err: any) {
@@ -417,7 +417,7 @@ function ERPPortal() {
     }
   };
 
-  // Teacher mark attendance submit
+  
   const handleSaveAttendance = async () => {
     if (!session) return;
     try {
@@ -442,7 +442,7 @@ function ERPPortal() {
     }
   };
 
-  // Teacher create new assignment
+  
   const handleCreateAssignment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) return;
@@ -475,7 +475,7 @@ function ERPPortal() {
     }
   };
 
-  // Teacher grade submission
+  
   const handleGradeSubmission = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session || !gradingSubmission) return;
@@ -498,7 +498,7 @@ function ERPPortal() {
     }
   };
 
-  // Admin approve/reject correction
+  
   const handleAdminCorrectionAction = async (requestId: string, action: 'APPROVED' | 'REJECTED') => {
     if (!session) return;
     try {
@@ -526,7 +526,7 @@ function ERPPortal() {
     }
   };
 
-  // Admin toggle student status
+  
   const handleToggleStudentStatus = async (studentId: string, currentStatus: string) => {
     if (!session) return;
     const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
@@ -613,7 +613,7 @@ function ERPPortal() {
     }
   };
 
-  // Loading spinner during initial session restore
+  
   if (initialChecking) {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white">
@@ -624,14 +624,14 @@ function ERPPortal() {
     );
   }
 
-  // =========================================================================
-  // VIEW 1: AUTHENTICATION / LOGIN SECTION (SEPARATE STUDENT & TEACHER PORTALS)
-  // Shown when not logged in (no direct access to ERP!)
-  // =========================================================================
+  
+  
+  
+  
   if (!session) {
     return (
       <div className="min-h-screen bg-[#edf8fc] text-slate-800 flex flex-col justify-between">
-        {/* Toast Notification */}
+        {}
         {notification && (
           <div
             className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl text-white font-medium flex items-center gap-3 transition-all ${
@@ -643,7 +643,7 @@ function ERPPortal() {
           </div>
         )}
 
-        {/* TOP BAR */}
+        {}
         <header className="border-b border-sky-100 bg-white sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -670,7 +670,7 @@ function ERPPortal() {
           </div>
         </header>
 
-        {/* MAIN LOGIN SECTION CONTAINER */}
+        {}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col justify-center">
           <div className="text-center max-w-xl mx-auto mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold mb-3">
@@ -681,10 +681,10 @@ function ERPPortal() {
             <p className="text-slate-500 text-sm mt-2">Academic services for students, faculty and ERP administration.</p>
           </div>
 
-          {/* DEDICATED ROLE SELECTOR TABS */}
+          {}
           <div className="max-w-xl mx-auto w-full mb-8">
             <div className="grid grid-cols-3 gap-2 p-1.5 bg-white border border-sky-100 rounded-2xl shadow-sm">
-              {/* Student Portal Tab */}
+              {}
               <button
                 onClick={() => {
                   setLoginRoleTab('STUDENT');
@@ -702,7 +702,7 @@ function ERPPortal() {
                 <span>Student Portal</span>
               </button>
 
-              {/* Faculty / Teacher Portal Tab */}
+              {}
               <button
                 onClick={() => {
                   setLoginRoleTab('TEACHER');
@@ -720,7 +720,7 @@ function ERPPortal() {
                 <span>Faculty Portal</span>
               </button>
 
-              {/* Admin Portal Tab */}
+              {}
               <button
                 onClick={() => {
                   setLoginRoleTab('ADMIN');
@@ -740,10 +740,10 @@ function ERPPortal() {
             </div>
           </div>
 
-          {/* LOGIN CARD & FORM */}
+          {}
           <div className="max-w-xl mx-auto w-full">
             <div className="bg-white border border-sky-100 rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
-              {/* Top Accent Gradient based on selected portal */}
+              {}
               <div
                 className={`absolute top-0 left-0 right-0 h-1.5 ${
                   loginRoleTab === 'STUDENT'
@@ -754,7 +754,7 @@ function ERPPortal() {
                 }`}
               />
 
-              {/* Role Header */}
+              {}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <span
@@ -791,7 +791,7 @@ function ERPPortal() {
                 </p>
               </div>
 
-              {/* Error Alert */}
+              {}
               {loginError && (
                 <div className="mb-5 p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2.5">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -802,7 +802,7 @@ function ERPPortal() {
                 </div>
               )}
 
-              {/* Form */}
+              {}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -914,7 +914,7 @@ function ERPPortal() {
                 </button>
               </form>
 
-              {/* QUICK DEMO CREDENTIAL FILLERS */}
+              {}
               <div className="mt-6 pt-5 border-t border-slate-800">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
@@ -924,7 +924,7 @@ function ERPPortal() {
                   <span className="text-[10px] text-slate-500">Instant login for evaluation</span>
                 </div>
 
-                {/* Student Demo Accounts */}
+                {}
                 {loginRoleTab === 'STUDENT' && (
                   <div className="space-y-2">
                     {DEMO_STUDENTS.map((demo) => (
@@ -955,7 +955,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* Teacher Demo Accounts */}
+                {}
                 {loginRoleTab === 'TEACHER' && (
                   <div className="space-y-2">
                     {DEMO_TEACHERS.map((demo) => (
@@ -986,7 +986,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* Admin Demo Accounts */}
+                {}
                 {loginRoleTab === 'ADMIN' && (
                   <div className="space-y-2">
                     {DEMO_ADMINS.map((demo) => (
@@ -1019,7 +1019,7 @@ function ERPPortal() {
               </div>
             </div>
 
-            {/* Security Notice */}
+            {}
             <div className="mt-6 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
               <Shield className="w-3.5 h-3.5 text-slate-400" />
               <span>Protected by Role-Based Access Control (RBAC) & Immutable Session Audit Logging</span>
@@ -1027,7 +1027,7 @@ function ERPPortal() {
           </div>
         </main>
 
-        {/* FOOTER */}
+        {}
         <footer className="border-t border-slate-800/80 py-5 text-center text-xs text-slate-500 bg-slate-950/50">
           <div className="max-w-7xl mx-auto px-4">
             CGC Landran • Student Academic Portal • Secure campus services
@@ -1037,13 +1037,13 @@ function ERPPortal() {
     );
   }
 
-  // =========================================================================
-  // VIEW 2: LOGGED-IN ERP PORTAL (STUDENT / TEACHER / ADMIN WORKSPACE)
-  // Reached only after authenticating through the designated login section!
-  // =========================================================================
+  
+  
+  
+  
   return (
     <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'theme-dark' : 'bg-slate-50 text-slate-800'}`}>
-      {/* Toast Notification */}
+      {}
       {notification && (
         <div
           className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-lg shadow-xl text-white font-medium flex items-center gap-3 transition-all ${
@@ -1055,7 +1055,7 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* TOP INSTITUTIONAL NAVIGATION & USER PROFILE HEADER */}
+      {}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -1085,7 +1085,7 @@ function ERPPortal() {
             </div>
           </div>
 
-          {/* User Profile & Logout Action */}
+          {}
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="text-right hidden sm:block">
               <div className="text-sm font-semibold text-slate-900">{session.user.name}</div>
@@ -1109,7 +1109,7 @@ function ERPPortal() {
               {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
 
-            {/* Prominent Log Out Button */}
+            {}
             <button
               onClick={handleLogout}
               className="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-rose-400 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 font-semibold text-xs flex items-center gap-1.5 transition shadow-xs"
@@ -1122,7 +1122,7 @@ function ERPPortal() {
         </div>
       </header>
 
-      {/* PORTAL CONTAINER */}
+      {}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
@@ -1172,12 +1172,12 @@ function ERPPortal() {
               </section>
             )}
 
-            {/* ========================================================================= */}
-            {/* PERSONA 1: STUDENT PORTAL (ATTENDANCE, BUNK PREDICTOR, NOTES, ASSIGNMENTS) */}
-            {/* ========================================================================= */}
+            {}
+            {}
+            {}
             {session.user.role === 'STUDENT' && (
               <div className="space-y-6">
-                {/* Student Info Bar */}
+                {}
                 <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <span className="px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-200 text-xs font-semibold tracking-wide uppercase border border-blue-400/30">
@@ -1191,7 +1191,7 @@ function ERPPortal() {
                     </p>
                   </div>
 
-                  {/* Quick Attendance Counter Badge */}
+                  {}
                   <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-center gap-4">
                     <div className="text-center">
                       <div className="text-3xl font-black text-white">{studentAttendance?.overall?.percentage}%</div>
@@ -1209,7 +1209,7 @@ function ERPPortal() {
                   </div>
                 </div>
 
-                {/* Student Navigation Tabs */}
+                {}
                 <div className="flex border-b border-slate-200 space-x-1 sm:space-x-4 overflow-x-auto pb-px">
                   {[
                     { id: 'overview', label: 'Dashboard', icon: TrendingUp },
@@ -1239,12 +1239,12 @@ function ERPPortal() {
                   })}
                 </div>
 
-                {/* TAB CONTENT: STUDENT OVERVIEW */}
+                {}
                 {activeTab === 'overview' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left 2 Cols */}
+                    {}
                     <div className="lg:col-span-2 space-y-6">
-                      {/* Attendance advisory card */}
+                      {}
                       <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex items-start gap-4">
                         <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                           <CheckCircle2 className="w-6 h-6" />
@@ -1258,7 +1258,7 @@ function ERPPortal() {
                         </div>
                       </div>
 
-                      {/* Academic calendar cards */}
+                      {}
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                         <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
                           <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
@@ -1344,7 +1344,7 @@ function ERPPortal() {
                         </section>
                       </div>
 
-                      {/* Today's Classes */}
+                      {}
                       <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
                         <div className="flex items-center justify-between mb-4">
                           <h2 className="font-bold text-slate-900 flex items-center gap-2">
@@ -1385,7 +1385,7 @@ function ERPPortal() {
                         )}
                       </div>
 
-                      {/* Academic Holidays */}
+                      {}
                       <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
                         <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                           <Calendar className="w-5 h-5 text-indigo-600" />
@@ -1403,7 +1403,7 @@ function ERPPortal() {
                         ) : <p className="text-sm text-slate-500">No holidays have been published.</p>}
                       </div>
 
-                      {/* Recent Lecture Notes & PDFs */}
+                      {}
                       <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
                         <div className="flex items-center justify-between mb-4">
                           <h2 className="font-bold text-slate-900 flex items-center gap-2">
@@ -1446,9 +1446,9 @@ function ERPPortal() {
                       </div>
                     </div>
 
-                    {/* Right Col: Notices & Results Preview */}
+                    {}
                     <div className="space-y-6">
-                      {/* Active Notices */}
+                      {}
                       <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
                         <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                           <AlertTriangle className="w-5 h-5 text-amber-500" />
@@ -1477,7 +1477,7 @@ function ERPPortal() {
                         </div>
                       </div>
 
-                      {/* Mid-term Results Snapshot */}
+                      {}
                       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-blue-100 rounded-xl p-5">
                         <div className="flex items-center justify-between mb-3">
                           <h3 className="font-bold text-indigo-950 text-sm">Mid-Term Academic Standing</h3>
@@ -1500,10 +1500,10 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TAB CONTENT: ATTENDANCE & BUNK PREDICTOR */}
+                {}
                 {activeTab === 'attendance' && (
                   <div className="space-y-6">
-                    {/* Predictor Engine Banner */}
+                    {}
                     <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
@@ -1525,7 +1525,7 @@ function ERPPortal() {
                       </div>
                     </div>
 
-                    {/* Subject-wise Cards */}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                       {studentAttendance?.subjects?.map((sub: any) => {
                         const isSafe = sub.percentage >= 75;
@@ -1569,7 +1569,7 @@ function ERPPortal() {
                                 </div>
                               )}
 
-                              {/* Progress bar */}
+                              {}
                               <div className="w-full bg-slate-100 rounded-full h-2.5 my-3 overflow-hidden">
                                 <div
                                   className={`h-2.5 rounded-full ${isSafe ? 'bg-emerald-500' : 'bg-rose-500'}`}
@@ -1589,7 +1589,7 @@ function ERPPortal() {
                       })}
                     </div>
 
-                    {/* Daily Attendance History */}
+                    {}
                     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
                       <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                         <History className="w-4 h-4 text-slate-600" />
@@ -1631,7 +1631,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TAB CONTENT: STUDY NOTES & PDFS */}
+                {}
                 {activeTab === 'notes' && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -1678,7 +1678,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TAB CONTENT: TIMETABLE */}
+                {}
                 {activeTab === 'timetable' && (
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
                     <h2 className="text-xl font-bold text-slate-900 mb-4">Weekly Lecture Timetable (Section CSE-4A)</h2>
@@ -1710,7 +1710,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TAB CONTENT: ASSIGNMENTS & STUDENT SUBMISSIONS */}
+                {}
                 {activeTab === 'assignments' && (
                   <div className="space-y-6">
                     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
@@ -1781,7 +1781,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TAB CONTENT: PROFILE & RECORD CORRECTION */}
+                {}
                 {activeTab === 'fees' && (
                   <div className="space-y-5">
                     <div className="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-100 rounded-xl p-6">
@@ -1834,7 +1834,7 @@ function ERPPortal() {
                         </button>
                       </div>
 
-                      {/* Read-only Demographics Grid */}
+                      {}
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                         <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
                           <div className="text-xs text-slate-500">Student Full Name</div>
@@ -1886,7 +1886,7 @@ function ERPPortal() {
                         </div>
                       </div>
 
-                      {/* Active or Past Correction Requests */}
+                      {}
                       <div className="mt-8 pt-6 border-t border-slate-200">
                         <h3 className="font-bold text-slate-900 text-sm mb-3">Correction Request Audit Status</h3>
                         <div className="space-y-3">
@@ -1929,12 +1929,12 @@ function ERPPortal() {
               </div>
             )}
 
-            {/* ========================================================================= */}
-            {/* PERSONA 2: TEACHER / FACULTY PORTAL (ATTENDANCE REGISTER, NOTES, GRADING) */}
-            {/* ========================================================================= */}
+            {}
+            {}
+            {}
             {session.user.role === 'TEACHER' && (
               <div className="space-y-6">
-                {/* Faculty Banner */}
+                {}
                 <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-emerald-950 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 text-xs font-semibold tracking-wide uppercase border border-emerald-400/30">
@@ -1963,7 +1963,7 @@ function ERPPortal() {
                   </div>
                 </div>
 
-                {/* Teacher Navigation Tabs */}
+                {}
                 <div className="flex border-b border-slate-200 space-x-1 sm:space-x-4 overflow-x-auto pb-px">
                   {[
                     { id: 'attendance', label: 'Attendance', icon: CheckCircle2 },
@@ -1989,7 +1989,7 @@ function ERPPortal() {
                   })}
                 </div>
 
-                {/* TEACHER TAB 1: ATTENDANCE MARKING */}
+                {}
                 {activeTab === 'attendance' && (
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
@@ -2000,7 +2000,7 @@ function ERPPortal() {
                         </p>
                       </div>
 
-                      {/* Selectors */}
+                      {}
                       <div className="flex flex-wrap items-center gap-3">
                         <select
                           value={selectedSubject}
@@ -2039,7 +2039,7 @@ function ERPPortal() {
                       </div>
                     </div>
 
-                    {/* Quick batch toggle buttons */}
+                    {}
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-slate-500">Student Roll Register ({teacherStudents.length} Students)</span>
                       <div className="flex gap-2">
@@ -2066,7 +2066,7 @@ function ERPPortal() {
                       </div>
                     </div>
 
-                    {/* Student List Grid */}
+                    {}
                     <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
                       {teacherStudents.map((st) => {
                         const status = teacherAttendanceMap[st.id] || 'PRESENT';
@@ -2103,7 +2103,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TEACHER TAB 2: UPLOAD NOTES */}
+                {}
                 {activeTab === 'notes' && (
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-4 border-b border-slate-200">
@@ -2138,7 +2138,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TEACHER TAB 3: ASSIGNMENTS & GRADING */}
+                {}
                 {activeTab === 'assignments' && (
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-6">
                     <div className="flex items-center justify-between pb-4 border-b border-slate-200">
@@ -2181,7 +2181,7 @@ function ERPPortal() {
                               </div>
                             </div>
 
-                            {/* Submissions List */}
+                            {}
                             <div className="mt-3 pt-3 border-t border-slate-100">
                               <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">
                                 Student Submissions ({assign.submissions?.length || 0})
@@ -2248,7 +2248,7 @@ function ERPPortal() {
                   </div>
                 )}
 
-                {/* TEACHER TAB 4: SCHEDULE */}
+                {}
                 {activeTab === 'schedule' && (
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
                     <h2 className="text-lg font-bold text-slate-900 mb-4">Teaching Schedule</h2>
@@ -2272,12 +2272,12 @@ function ERPPortal() {
               </div>
             )}
 
-            {/* ========================================================================= */}
-            {/* PERSONA 3: ERP ADMIN & SUPER ADMIN (PROFILE APPROVALS, AUDIT TRAIL)       */}
-            {/* ========================================================================= */}
+            {}
+            {}
+            {}
             {(session.user.role === 'ERP_ADMIN' || session.user.role === 'SUPER_ADMIN') && (
               <div className="space-y-6">
-                {/* Admin Header Banner */}
+                {}
                 <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
@@ -2291,7 +2291,7 @@ function ERPPortal() {
                     </p>
                   </div>
 
-                  {/* Summary KPI Badges */}
+                  {}
                   <div className="flex flex-wrap gap-3">
                     <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 px-4 border border-white/10 text-center">
                       <div className="text-2xl font-bold text-white">{adminDashboard?.stats?.totalStudents}</div>
@@ -2310,7 +2310,7 @@ function ERPPortal() {
                   </div>
                 </div>
 
-                {/* Admin Navigation Tabs */}
+                {}
                 <div className="flex border-b border-slate-200 space-x-1 sm:space-x-4 overflow-x-auto pb-px">
                   {[
                     { id: 'corrections', label: 'Approvals', icon: UserCheck },
@@ -2342,7 +2342,7 @@ function ERPPortal() {
                   })}
                 </div>
 
-                {/* ADMIN TAB 1: SENSITIVE PROFILE CORRECTIONS */}
+                {}
                 {activeTab === 'corrections' && (
                   <div className="space-y-6">
                     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
@@ -2785,9 +2785,9 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 2: STUDENT SUBMIT ASSIGNMENT WORK                                   */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {submittingAssignment && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
@@ -2852,9 +2852,9 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 3: TEACHER UPLOAD NOTE                                              */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {showUploadNoteModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
@@ -2959,9 +2959,9 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 4: TEACHER CREATE ASSIGNMENT                                        */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {showCreateAssignmentModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
@@ -3043,9 +3043,9 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 5: TEACHER GRADE STUDENT SUBMISSION                                 */}
-      {/* ========================================================================= */}
+      {}
+      {}
+      {}
       {gradingSubmission && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
@@ -3124,7 +3124,7 @@ function ERPPortal() {
         </div>
       )}
 
-      {/* FOOTER */}
+      {}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4">
           CGC Landran Student Portal • Secure Academic Services

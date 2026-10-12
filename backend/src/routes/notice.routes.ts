@@ -4,7 +4,7 @@ import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// GET /api/notices (Public/Authenticated)
+
 router.get('/', async (req, res) => {
   try {
     const { category, audience } = req.query;
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/notices (Admin & Teacher only)
+
 router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     if (!['SUPER_ADMIN', 'ERP_ADMIN', 'TEACHER'].includes(req.user!.role)) {

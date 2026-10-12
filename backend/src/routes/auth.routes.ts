@@ -14,15 +14,15 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || (process.env.NODE_ENV === 'production' ? '15m' : '7d');
 const challenges = new Map<string, { answer: string; expiresAt: number }>();
 
-// Lightweight first-party challenge for the demo portal. In production, replace this
-// with hCaptcha/Cloudflare Turnstile and verify the token server-side.
+
+
 router.get('/challenge', (_req: Request, res: Response) => {
   const now = Date.now();
   for (const [challengeId, challenge] of challenges) {
     if (challenge.expiresAt < now) challenges.delete(challengeId);
   }
-  // Prevent a burst of anonymous challenge requests from growing this map
-  // without bound in the local server or behind a misconfigured proxy.
+  
+  
   if (challenges.size >= 5000) challenges.clear();
   const id = crypto.randomUUID();
   const answer = String(Math.floor(1000 + Math.random() * 9000));
@@ -30,10 +30,10 @@ router.get('/challenge', (_req: Request, res: Response) => {
   return res.json({ success: true, challengeId: id, question: answer });
 });
 
-// POST /api/auth/login
+
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { identifier, password, expectedRole, challengeId, challengeAnswer } = req.body; // email or rollNo or employeeId
+    const { identifier, password, expectedRole, challengeId, challengeAnswer } = req.body; 
 
     if (!identifier || !password) {
       return res.status(400).json({ success: false, message: 'Identifier and password are required' });
@@ -45,7 +45,7 @@ router.post('/login', async (req: Request, res: Response) => {
     }
     challenges.delete(String(challengeId));
 
-    // Try finding by email
+    
     let user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -92,7 +92,7 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ success: false, message: 'Invalid password. Please check your credentials.' });
     }
 
-    // Re-issuing a session id invalidates any older browser/device session.
+    
     const sessionId = crypto.randomUUID();
     await prisma.user.update({ where: { id: user.id }, data: { activeSessionId: sessionId } });
 
@@ -108,7 +108,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const permissions = user.permissions ? user.permissions.split(',').map((p) => p.trim()) : [];
 
-    // Log login in audit
+    
     await prisma.auditLog.create({
       data: {
         userId: user.id,
@@ -148,7 +148,7 @@ router.post('/logout', authenticate, async (req: AuthRequest, res: Response) => 
   return res.json({ success: true, message: 'Signed out from this device.' });
 });
 
-// GET /api/auth/me
+
 router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
@@ -193,14 +193,14 @@ router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// POST /api/auth/forgot-password-request
+
 router.post('/forgot-password-request', async (req: Request, res: Response) => {
   const { rollOrEmail } = req.body;
   if (!rollOrEmail) {
     return res.status(400).json({ success: false, message: 'Please provide email or Student Roll number' });
   }
 
-  // Simulated OTP dispatch
+  
   return res.json({
     success: true,
     message: `Password reset verification token sent to registered email for ${rollOrEmail}. In demo mode, contact ERP Admin.`,
